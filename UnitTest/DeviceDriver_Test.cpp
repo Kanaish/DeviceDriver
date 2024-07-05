@@ -3,7 +3,18 @@
 
 #include "../DeviceDriver/DeviceDriver.cpp"
 
+class FlashMock : public FlashMemoryDevice {
+public:
+	MOCK_METHOD(unsigned char, read, (long address), ());
+	MOCK_METHOD(void, write, (long address, unsigned char data), ());
+};
+
 TEST(TestCaseName, TestName) {
-	EXPECT_EQ(1, 1);
-	EXPECT_TRUE(true);
+	FlashMock mk;
+	DeviceDriver dd(&mk);
+
+	EXPECT_CALL(mk, read(0x00))
+		.Times(5);
+
+	dd.read(0x00);
 }
