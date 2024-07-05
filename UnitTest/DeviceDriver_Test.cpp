@@ -2,6 +2,7 @@
 #include "gmock/gmock.h"
 
 #include "../DeviceDriver/DeviceDriver.cpp"
+#include "../DeviceDriver/App.cpp"
 
 using namespace testing;
 
@@ -51,4 +52,26 @@ TEST(DeviceDriverTest, 쓰기_실패_테스트) {
 		.WillRepeatedly(Return(0x22));
 
 	EXPECT_THROW(dd.write(0x00, 0x11), std::exception);
+}
+
+TEST(DeviceDriverTest, App_읽기_테스트) {
+	FlashMock mk;
+	DeviceDriver dd{ &mk };
+	App* app = new App(&dd);
+
+	EXPECT_CALL(mk, read)
+		.WillRepeatedly(Return(0x22));
+
+	EXPECT_NO_THROW(app->ReadAndPrint(0x0, 0x5));
+}
+
+TEST(DeviceDriverTest, App_쓰기_테스트) {
+	FlashMock mk;
+	DeviceDriver dd{ &mk };
+	App* app = new App(&dd);
+
+	EXPECT_CALL(mk, read)
+		.WillRepeatedly(Return(0xFF));
+
+	EXPECT_NO_THROW(app->WriteAll(0x88));
 }
